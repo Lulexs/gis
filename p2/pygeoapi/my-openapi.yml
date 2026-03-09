@@ -111,7 +111,7 @@ components:
       name: resourceId
       required: true
       schema:
-        default: obs
+        default: kanto_prefectures
         type: string
     skipGeometry:
       description: This option can be used to skip response geometries for each feature.
@@ -284,10 +284,10 @@ paths:
       summary: Collections
       tags:
       - server
-  /collections/canada-metadata:
+  /collections/kanto_prefectures:
     get:
-      description: Sample metadata records from open.canada.ca
-      operationId: describeCanada-metadataCollection
+      description: List of Kanto Region Prefectures in Japan
+      operationId: describeKanto_prefecturesCollection
       parameters:
       - $ref: '#/components/parameters/f'
       - $ref: '#/components/parameters/lang'
@@ -300,13 +300,13 @@ paths:
           $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
         '500':
           $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Open Canada sample data metadata
+      summary: Get Kanto Region Prefectures metadata
       tags:
-      - canada-metadata
-  /collections/canada-metadata/items:
+      - kanto_prefectures
+  /collections/kanto_prefectures/items:
     get:
-      description: Sample metadata records from open.canada.ca
-      operationId: getCanada-metadataFeatures
+      description: List of Kanto Region Prefectures in Japan
+      operationId: getKanto_prefecturesFeatures
       parameters:
       - description: The optional f parameter indicates the output format which the
           server shall provide as part of the response document.  The default format
@@ -350,15 +350,9 @@ paths:
         schema:
           items:
             enum:
-            - created
-            - updated
-            - type
-            - title
-            - description
-            - contacts
-            - externalIds
-            - themes
-            - q
+            - id
+            - prefecture_name
+            - is_part_of_tokyo
             type: string
           type: array
         style: form
@@ -366,65 +360,26 @@ paths:
       - $ref: '#/components/parameters/skipGeometry'
       - $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-records/master/core/openapi/parameters/sortby.yaml
       - $ref: '#/components/parameters/offset'
-      - $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-records/master/core/openapi/parameters/q.yaml
-      - $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/datetime
       - explode: false
         in: query
-        name: created
+        name: id
         required: false
         schema:
-          format: date-time
-          type: string
+          type: integer
         style: form
       - explode: false
         in: query
-        name: updated
-        required: false
-        schema:
-          format: date-time
-          type: string
-        style: form
-      - explode: false
-        in: query
-        name: type
+        name: prefecture_name
         required: false
         schema:
           type: string
         style: form
       - explode: false
         in: query
-        name: title
+        name: is_part_of_tokyo
         required: false
         schema:
-          type: string
-        style: form
-      - explode: false
-        in: query
-        name: description
-        required: false
-        schema:
-          type: string
-        style: form
-      - explode: false
-        in: query
-        name: contacts
-        required: false
-        schema:
-          type: string
-        style: form
-      - explode: false
-        in: query
-        name: externalIds
-        required: false
-        schema:
-          type: string
-        style: form
-      - explode: false
-        in: query
-        name: themes
-        required: false
-        schema:
-          type: string
+          type: boolean
         style: form
       responses:
         '200':
@@ -435,21 +390,21 @@ paths:
           $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
         '500':
           $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Open Canada sample data items
+      summary: Get Kanto Region Prefectures items
       tags:
-      - canada-metadata
+      - kanto_prefectures
     options:
-      description: Sample metadata records from open.canada.ca
-      operationId: optionsCanada-metadataFeatures
+      description: List of Kanto Region Prefectures in Japan
+      operationId: optionsKanto_prefecturesFeatures
       responses:
         '200':
           description: options response
-      summary: Options for Open Canada sample data items
+      summary: Options for Kanto Region Prefectures items
       tags:
-      - canada-metadata
+      - kanto_prefectures
     post:
-      description: Sample metadata records from open.canada.ca
-      operationId: getCQL2Canada-metadataFeatures
+      description: List of Kanto Region Prefectures in Japan
+      operationId: getCQL2Kanto_prefecturesFeatures
       requestBody:
         content:
           application/json:
@@ -464,13 +419,13 @@ paths:
           $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
         '500':
           $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Open Canada sample data items with CQL2
+      summary: Get Kanto Region Prefectures items with CQL2
       tags:
-      - canada-metadata
-  /collections/canada-metadata/items/{featureId}:
+      - kanto_prefectures
+  /collections/kanto_prefectures/items/{featureId}:
     get:
-      description: Sample metadata records from open.canada.ca
-      operationId: getCanada-metadataFeature
+      description: List of Kanto Region Prefectures in Japan
+      operationId: getKanto_prefecturesFeature
       parameters:
       - $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/featureId
       - $ref: '#/components/parameters/crs'
@@ -485,29 +440,28 @@ paths:
           $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
         '500':
           $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Open Canada sample data item by id
+      summary: Get Kanto Region Prefectures item by id
       tags:
-      - canada-metadata
+      - kanto_prefectures
     options:
-      description: Sample metadata records from open.canada.ca
-      operationId: optionsCanada-metadataFeature
+      description: List of Kanto Region Prefectures in Japan
+      operationId: optionsKanto_prefecturesFeature
       parameters:
       - $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/featureId
       responses:
         '200':
           description: options response
-      summary: Options for Open Canada sample data item by id
+      summary: Options for Kanto Region Prefectures item by id
       tags:
-      - canada-metadata
-  /collections/canada-metadata/queryables:
+      - kanto_prefectures
+  /collections/kanto_prefectures/queryables:
     get:
-      description: Sample metadata records from open.canada.ca
-      operationId: getCanada-metadataQueryables
+      description: List of Kanto Region Prefectures in Japan
+      operationId: getKanto_prefecturesQueryables
       parameters:
       - *id001
       - $ref: '#/components/parameters/f'
-      - &id003
-        description: The profile to be applied to a given request
+      - description: The profile to be applied to a given request
         explode: false
         in: query
         name: profile
@@ -528,13 +482,13 @@ paths:
           $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
         '500':
           $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Open Canada sample data queryables
+      summary: Get Kanto Region Prefectures queryables
       tags:
-      - canada-metadata
-  /collections/canada-metadata/schema:
+      - kanto_prefectures
+  /collections/kanto_prefectures/schema:
     get:
-      description: Sample metadata records from open.canada.ca
-      operationId: getCanada-metadataSchema
+      description: List of Kanto Region Prefectures in Japan
+      operationId: getKanto_prefecturesSchema
       parameters:
       - $ref: '#/components/parameters/f'
       - $ref: '#/components/parameters/lang'
@@ -547,795 +501,9 @@ paths:
           $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
         '500':
           $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Open Canada sample data schema
+      summary: Get Kanto Region Prefectures schema
       tags:
-      - canada-metadata
-  /collections/gdps-temperature:
-    get:
-      description: Global Deterministic Prediction System sample
-      operationId: describeGdps-temperatureCollection
-      parameters:
-      - $ref: '#/components/parameters/f'
-      - $ref: '#/components/parameters/lang'
-      responses:
-        '200':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Collection
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Global Deterministic Prediction System sample metadata
-      tags:
-      - gdps-temperature
-  /collections/gdps-temperature/coverage:
-    get:
-      description: Global Deterministic Prediction System sample
-      operationId: getGdps-temperatureCoverage
-      parameters:
-      - $ref: '#/components/parameters/lang'
-      - $ref: '#/components/parameters/f'
-      - $ref: '#/components/parameters/bbox'
-      - $ref: '#/components/parameters/bbox-crs'
-      - $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-coverages/refs/heads/master/standard/openapi/ogcapi-coverages-1.yaml#/components/parameters/subset
-      - description: The properties that should be included. The parameter value is
-          a comma-separated list of property names.
-        explode: false
-        in: query
-        name: properties
-        required: false
-        schema:
-          items:
-            enum:
-            - '1'
-            type: string
-          type: array
-        style: form
-      responses:
-        '200':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Features
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Global Deterministic Prediction System sample coverage
-      tags:
-      - gdps-temperature
-  /collections/kanto_region:
-    get:
-      description: Kanto Region in Japan
-      operationId: describeKanto_regionCollection
-      parameters:
-      - $ref: '#/components/parameters/f'
-      - $ref: '#/components/parameters/lang'
-      responses:
-        '200':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Collection
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Kanto Region metadata
-      tags:
-      - kanto_region
-  /collections/kanto_region/items:
-    get:
-      description: Kanto Region in Japan
-      operationId: getKanto_regionFeatures
-      parameters:
-      - description: The optional f parameter indicates the output format which the
-          server shall provide as part of the response document.  The default format
-          is GeoJSON.
-        explode: false
-        in: query
-        name: f
-        required: false
-        schema:
-          default: json
-          enum:
-          - json
-          - html
-          - jsonld
-          - csv
-          type: string
-        style: form
-      - $ref: '#/components/parameters/lang'
-      - $ref: '#/components/parameters/bbox'
-      - description: The optional limit parameter limits the number of items that
-          are presented in the response document (maximum=50, default=20).
-        explode: false
-        in: query
-        name: limit
-        required: false
-        schema:
-          default: 20
-          maximum: 50
-          minimum: 1
-          type: integer
-        style: form
-      - $ref: '#/components/parameters/crs'
-      - $ref: '#/components/parameters/bbox-crs'
-      - &id002
-        description: The properties that should be included. The parameter value is
-          a comma-separated list of property names.
-        explode: false
-        in: query
-        name: properties
-        required: false
-        schema:
-          items:
-            enum:
-            - id
-            - region_name
-            type: string
-          type: array
-        style: form
-      - $ref: '#/components/parameters/vendorSpecificParameters'
-      - $ref: '#/components/parameters/skipGeometry'
-      - $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-records/master/core/openapi/parameters/sortby.yaml
-      - $ref: '#/components/parameters/offset'
-      - explode: false
-        in: query
-        name: id
-        required: false
-        schema:
-          type: integer
-        style: form
-      - explode: false
-        in: query
-        name: region_name
-        required: false
-        schema:
-          type: string
-        style: form
-      responses:
-        '200':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Features
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Kanto Region items
-      tags:
-      - kanto_region
-    options:
-      description: Kanto Region in Japan
-      operationId: optionsKanto_regionFeatures
-      responses:
-        '200':
-          description: options response
-      summary: Options for Kanto Region items
-      tags:
-      - kanto_region
-    post:
-      description: Kanto Region in Japan
-      operationId: getCQL2Kanto_regionFeatures
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: https://schemas.opengis.net/cql2/1.0/cql2.json
-        description: Get items with CQL2
-        required: true
-      responses:
-        '200':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Features
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Kanto Region items with CQL2
-      tags:
-      - kanto_region
-  /collections/kanto_region/items/{featureId}:
-    get:
-      description: Kanto Region in Japan
-      operationId: getKanto_regionFeature
-      parameters:
-      - $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/featureId
-      - $ref: '#/components/parameters/crs'
-      - $ref: '#/components/parameters/f'
-      - $ref: '#/components/parameters/lang'
-      responses:
-        '200':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Feature
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Kanto Region item by id
-      tags:
-      - kanto_region
-    options:
-      description: Kanto Region in Japan
-      operationId: optionsKanto_regionFeature
-      parameters:
-      - $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/featureId
-      responses:
-        '200':
-          description: options response
-      summary: Options for Kanto Region item by id
-      tags:
-      - kanto_region
-  /collections/kanto_region/queryables:
-    get:
-      description: Kanto Region in Japan
-      operationId: getKanto_regionQueryables
-      parameters:
-      - *id002
-      - $ref: '#/components/parameters/f'
-      - *id003
-      - $ref: '#/components/parameters/lang'
-      responses:
-        '200':
-          $ref: '#/components/responses/Queryables'
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Kanto Region queryables
-      tags:
-      - kanto_region
-  /collections/kanto_region/schema:
-    get:
-      description: Kanto Region in Japan
-      operationId: getKanto_regionSchema
-      parameters:
-      - $ref: '#/components/parameters/f'
-      - $ref: '#/components/parameters/lang'
-      responses:
-        '200':
-          $ref: '#/components/responses/Queryables'
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Kanto Region schema
-      tags:
-      - kanto_region
-  /collections/lakes:
-    get:
-      description: lakes of the world, public domain
-      operationId: describeLakesCollection
-      parameters:
-      - $ref: '#/components/parameters/f'
-      - $ref: '#/components/parameters/lang'
-      responses:
-        '200':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Collection
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Large Lakes metadata
-      tags:
-      - lakes
-  /collections/lakes/items:
-    get:
-      description: lakes of the world, public domain
-      operationId: getLakesFeatures
-      parameters:
-      - description: The optional f parameter indicates the output format which the
-          server shall provide as part of the response document.  The default format
-          is GeoJSON.
-        explode: false
-        in: query
-        name: f
-        required: false
-        schema:
-          default: json
-          enum:
-          - json
-          - html
-          - jsonld
-          - csv
-          type: string
-        style: form
-      - $ref: '#/components/parameters/lang'
-      - $ref: '#/components/parameters/bbox'
-      - description: The optional limit parameter limits the number of items that
-          are presented in the response document (maximum=50, default=20).
-        explode: false
-        in: query
-        name: limit
-        required: false
-        schema:
-          default: 20
-          maximum: 50
-          minimum: 1
-          type: integer
-        style: form
-      - $ref: '#/components/parameters/crs'
-      - $ref: '#/components/parameters/bbox-crs'
-      - &id004
-        description: The properties that should be included. The parameter value is
-          a comma-separated list of property names.
-        explode: false
-        in: query
-        name: properties
-        required: false
-        schema:
-          items:
-            enum:
-            - id
-            - scalerank
-            - name
-            - name_alt
-            - admin
-            - featureclass
-            type: string
-          type: array
-        style: form
-      - $ref: '#/components/parameters/vendorSpecificParameters'
-      - $ref: '#/components/parameters/skipGeometry'
-      - $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-records/master/core/openapi/parameters/sortby.yaml
-      - $ref: '#/components/parameters/offset'
-      - explode: false
-        in: query
-        name: id
-        required: false
-        schema:
-          type: integer
-        style: form
-      - explode: false
-        in: query
-        name: scalerank
-        required: false
-        schema:
-          type: integer
-        style: form
-      - explode: false
-        in: query
-        name: name
-        required: false
-        schema:
-          type: string
-        style: form
-      - explode: false
-        in: query
-        name: name_alt
-        required: false
-        schema:
-          type: string
-        style: form
-      - explode: false
-        in: query
-        name: admin
-        required: false
-        schema:
-          type: string
-        style: form
-      - explode: false
-        in: query
-        name: featureclass
-        required: false
-        schema:
-          type: string
-        style: form
-      responses:
-        '200':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Features
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Large Lakes items
-      tags:
-      - lakes
-    options:
-      description: lakes of the world, public domain
-      operationId: optionsLakesFeatures
-      responses:
-        '200':
-          description: options response
-      summary: Options for Large Lakes items
-      tags:
-      - lakes
-    post:
-      description: lakes of the world, public domain
-      operationId: getCQL2LakesFeatures
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: https://schemas.opengis.net/cql2/1.0/cql2.json
-        description: Get items with CQL2
-        required: true
-      responses:
-        '200':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Features
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Large Lakes items with CQL2
-      tags:
-      - lakes
-  /collections/lakes/items/{featureId}:
-    get:
-      description: lakes of the world, public domain
-      operationId: getLakesFeature
-      parameters:
-      - $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/featureId
-      - $ref: '#/components/parameters/crs'
-      - $ref: '#/components/parameters/f'
-      - $ref: '#/components/parameters/lang'
-      responses:
-        '200':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Feature
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Large Lakes item by id
-      tags:
-      - lakes
-    options:
-      description: lakes of the world, public domain
-      operationId: optionsLakesFeature
-      parameters:
-      - $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/featureId
-      responses:
-        '200':
-          description: options response
-      summary: Options for Large Lakes item by id
-      tags:
-      - lakes
-  /collections/lakes/queryables:
-    get:
-      description: lakes of the world, public domain
-      operationId: getLakesQueryables
-      parameters:
-      - *id004
-      - $ref: '#/components/parameters/f'
-      - *id003
-      - $ref: '#/components/parameters/lang'
-      responses:
-        '200':
-          $ref: '#/components/responses/Queryables'
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Large Lakes queryables
-      tags:
-      - lakes
-  /collections/lakes/schema:
-    get:
-      description: lakes of the world, public domain
-      operationId: getLakesSchema
-      parameters:
-      - $ref: '#/components/parameters/f'
-      - $ref: '#/components/parameters/lang'
-      responses:
-        '200':
-          $ref: '#/components/responses/Queryables'
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Large Lakes schema
-      tags:
-      - lakes
-  /collections/mapserver_world_map:
-    get:
-      description: MapServer demo WMS world map
-      operationId: describeMapserver_world_mapCollection
-      parameters:
-      - $ref: '#/components/parameters/f'
-      - $ref: '#/components/parameters/lang'
-      responses:
-        '200':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Collection
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get MapServer demo WMS world map metadata
-      tags:
-      - mapserver_world_map
-  /collections/mapserver_world_map/map:
-    get:
-      description: MapServer demo WMS world map map
-      operationId: getMap
-      parameters:
-      - $ref: '#/components/parameters/bbox'
-      - $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/datetime
-      - $ref: https://schemas.opengis.net/ogcapi/maps/part1/1.0/openapi/ogcapi-maps-1.yaml#/components/parameters/subset
-      - description: Response image width
-        explode: false
-        in: query
-        name: width
-        required: false
-        schema:
-          type: integer
-        style: form
-      - description: Response image height
-        explode: false
-        in: query
-        name: height
-        required: false
-        schema:
-          type: integer
-        style: form
-      - description: Background transparency of map (default=true).
-        explode: false
-        in: query
-        name: transparent
-        required: false
-        schema:
-          default: true
-          type: boolean
-        style: form
-      - $ref: '#/components/parameters/bbox-crs-epsg'
-      - description: The optional f parameter indicates the output format which the
-          server shall provide as part of the response document.  The default format
-          is GeoJSON.
-        explode: false
-        in: query
-        name: f
-        required: false
-        schema:
-          default: png
-          enum:
-          - png
-          type: string
-        style: form
-      responses:
-        '200':
-          content:
-            application/json: {}
-          description: Response
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get map
-      tags:
-      - mapserver_world_map
-  /collections/obs:
-    get:
-      description: My cool observations
-      operationId: describeObsCollection
-      parameters:
-      - $ref: '#/components/parameters/f'
-      - $ref: '#/components/parameters/lang'
-      responses:
-        '200':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Collection
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Observations metadata
-      tags:
-      - obs
-  /collections/obs/items:
-    get:
-      description: My cool observations
-      operationId: getObsFeatures
-      parameters:
-      - description: The optional f parameter indicates the output format which the
-          server shall provide as part of the response document.  The default format
-          is GeoJSON.
-        explode: false
-        in: query
-        name: f
-        required: false
-        schema:
-          default: json
-          enum:
-          - json
-          - html
-          - jsonld
-          - csv
-          type: string
-        style: form
-      - $ref: '#/components/parameters/lang'
-      - $ref: '#/components/parameters/bbox'
-      - description: The optional limit parameter limits the number of items that
-          are presented in the response document (maximum=50, default=20).
-        explode: false
-        in: query
-        name: limit
-        required: false
-        schema:
-          default: 20
-          maximum: 50
-          minimum: 1
-          type: integer
-        style: form
-      - $ref: '#/components/parameters/crs'
-      - $ref: '#/components/parameters/bbox-crs'
-      - &id005
-        description: The properties that should be included. The parameter value is
-          a comma-separated list of property names.
-        explode: false
-        in: query
-        name: properties
-        required: false
-        schema:
-          items:
-            enum:
-            - id
-            - stn_id
-            - datetime
-            - value
-            type: string
-          type: array
-        style: form
-      - $ref: '#/components/parameters/vendorSpecificParameters'
-      - $ref: '#/components/parameters/skipGeometry'
-      - $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-records/master/core/openapi/parameters/sortby.yaml
-      - $ref: '#/components/parameters/offset'
-      - explode: false
-        in: query
-        name: id
-        required: false
-        schema:
-          type: string
-        style: form
-      - explode: false
-        in: query
-        name: stn_id
-        required: false
-        schema:
-          type: integer
-        style: form
-      - explode: false
-        in: query
-        name: datetime
-        required: false
-        schema:
-          type: string
-        style: form
-      - explode: false
-        in: query
-        name: value
-        required: false
-        schema:
-          type: number
-        style: form
-      responses:
-        '200':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Features
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Observations items
-      tags:
-      - obs
-    options:
-      description: My cool observations
-      operationId: optionsObsFeatures
-      responses:
-        '200':
-          description: options response
-      summary: Options for Observations items
-      tags:
-      - obs
-    post:
-      description: My cool observations
-      operationId: getCQL2ObsFeatures
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: https://schemas.opengis.net/cql2/1.0/cql2.json
-        description: Get items with CQL2
-        required: true
-      responses:
-        '200':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Features
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Observations items with CQL2
-      tags:
-      - obs
-  /collections/obs/items/{featureId}:
-    get:
-      description: My cool observations
-      operationId: getObsFeature
-      parameters:
-      - $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/featureId
-      - $ref: '#/components/parameters/crs'
-      - $ref: '#/components/parameters/f'
-      - $ref: '#/components/parameters/lang'
-      responses:
-        '200':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Feature
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Observations item by id
-      tags:
-      - obs
-    options:
-      description: My cool observations
-      operationId: optionsObsFeature
-      parameters:
-      - $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/featureId
-      responses:
-        '200':
-          description: options response
-      summary: Options for Observations item by id
-      tags:
-      - obs
-  /collections/obs/queryables:
-    get:
-      description: My cool observations
-      operationId: getObsQueryables
-      parameters:
-      - *id005
-      - $ref: '#/components/parameters/f'
-      - *id003
-      - $ref: '#/components/parameters/lang'
-      responses:
-        '200':
-          $ref: '#/components/responses/Queryables'
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Observations queryables
-      tags:
-      - obs
-  /collections/obs/schema:
-    get:
-      description: My cool observations
-      operationId: getObsSchema
-      parameters:
-      - $ref: '#/components/parameters/f'
-      - $ref: '#/components/parameters/lang'
-      responses:
-        '200':
-          $ref: '#/components/responses/Queryables'
-        '400':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
-        '404':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
-        '500':
-          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
-      summary: Get Observations schema
-      tags:
-      - obs
+      - kanto_prefectures
   /conformance:
     get:
       description: API conformance definition
@@ -1372,7 +540,7 @@ paths:
       description: Cancel / delete job
       operationId: deleteJob
       parameters:
-      - &id006
+      - &id002
         description: job identifier
         in: path
         name: jobId
@@ -1393,7 +561,7 @@ paths:
       description: Retrieve job details
       operationId: getJob
       parameters:
-      - *id006
+      - *id002
       - $ref: '#/components/parameters/f'
       responses:
         '200':
@@ -1410,7 +578,7 @@ paths:
       description: Retrieve job results
       operationId: getJobResults
       parameters:
-      - *id006
+      - *id002
       - $ref: '#/components/parameters/f'
       responses:
         '200':
@@ -1451,95 +619,6 @@ paths:
       summary: This document
       tags:
       - server
-  /processes:
-    get:
-      description: Processes
-      operationId: getProcesses
-      parameters:
-      - $ref: '#/components/parameters/f'
-      responses:
-        '200':
-          $ref: https://schemas.opengis.net/ogcapi/processes/part1/1.0/openapi/responses/ProcessList.yaml
-        default:
-          $ref: '#/components/responses/default'
-      summary: Processes
-      tags:
-      - server
-  /processes/hello-world:
-    get:
-      description: An example process that takes a name as input, and echoes it back
-        as output. Intended to demonstrate a simple process with a single literal
-        input.
-      operationId: describeHello-worldProcess
-      parameters:
-      - $ref: '#/components/parameters/f'
-      responses:
-        '200':
-          $ref: '#/components/responses/200'
-        default:
-          $ref: '#/components/responses/default'
-      summary: Get process metadata
-      tags:
-      - hello-world
-  /processes/hello-world/execution:
-    post:
-      description: An example process that takes a name as input, and echoes it back
-        as output. Intended to demonstrate a simple process with a single literal
-        input.
-      operationId: executeHello-worldJob
-      parameters:
-      - description: Indicates client preferences, including whether the client is
-          capable of asynchronous processing.
-        in: header
-        name: Prefer
-        required: false
-        schema:
-          enum:
-          - respond-sync
-          - respond-async
-          type: string
-      requestBody:
-        content:
-          application/json:
-            example:
-              inputs:
-                message: An optional message.
-                name: World
-            schema:
-              $ref: https://schemas.opengis.net/ogcapi/processes/part1/1.0/openapi/schemas/execute.yaml
-        description: Mandatory execute request JSON
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: object
-          description: Process output schema
-        '201':
-          $ref: https://schemas.opengis.net/ogcapi/processes/part1/1.0/openapi/responses/ExecuteAsync.yaml
-        '404':
-          $ref: https://schemas.opengis.net/ogcapi/processes/part1/1.0/openapi/responses/NotFound.yaml
-        '500':
-          $ref: https://schemas.opengis.net/ogcapi/processes/part1/1.0/openapi/responses/ServerError.yaml
-        default:
-          $ref: '#/components/responses/default'
-      summary: Process Hello World execution
-      tags:
-      - hello-world
-  /stac/catalog:
-    get:
-      description: SpatioTemporal Asset Catalog
-      operationId: getStacCatalog
-      parameters: []
-      responses:
-        '200':
-          $ref: '#/components/responses/200'
-        default:
-          $ref: '#/components/responses/default'
-      summary: SpatioTemporal Asset Catalog
-      tags:
-      - stac
 servers:
 - description: pygeoapi provides an API to geospatial data
   url: http://localhost:5000
@@ -1549,18 +628,8 @@ tags:
     description: information
     url: https://example.org
   name: server
-- description: My cool observations
-  name: obs
-- description: lakes of the world, public domain
-  name: lakes
-- description: MapServer demo WMS world map
-  name: mapserver_world_map
-- description: Global Deterministic Prediction System sample
-  name: gdps-temperature
-- description: Sample metadata records from open.canada.ca
-  name: canada-metadata
-- description: Kanto Region in Japan
-  name: kanto_region
+- description: List of Kanto Region Prefectures in Japan
+  name: kanto_prefectures
 - name: coverages
 - name: edr
 - name: records
