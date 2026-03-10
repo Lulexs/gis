@@ -39,7 +39,7 @@ server:
     # First language is the default language
     - en-US
     - fr-CA
-  # cors: true
+  cors: true
   pretty_print: true
   limits:
     default_items: 20
@@ -58,7 +58,7 @@ server:
   admin: false # enable admin api
 
 logging:
-  level: ERROR
+  level: DEBUG
   #logfile: /tmp/pygeoapi.log
 
 metadata:
@@ -108,6 +108,10 @@ resources:
     type: collection
     title: Kanto Region Prefectures
     description: List of Kanto Region Prefectures in Japan
+    keywords:
+      - japan
+      - kanto
+      - prefectures
     extents:
       spatial:
         bbox: [-180, -90, 180, 90]
@@ -123,3 +127,51 @@ resources:
         table: kanto_prefectures
         id_field: id
         geom_field: geom
+
+  tokyo_hot_springs:
+    type: collection
+    title: Tokyo Hot Springs
+    description: List of hot springs in the area of Greater Tokyo
+    keywords:
+      - tokyo
+      - hot springs
+    extents:
+      spatial:
+        bbox: [-180, -90, 180, 90]
+        crs: http://www.opengis.net/def/crs/OGC/1.3/CRS84
+    providers:
+      - type: feature
+        name: PostgreSQL
+        data:
+          host: localhost
+          database: postgres
+          user: postgres
+          password: postgres
+        table: tokyo_hot_springs
+        id_field: id
+        geom_field: geom
+
+  temples:
+    type: collection
+    title: Kanto Temples Hotspot
+    description: Temples within the most densely populated administrative area
+    extents:
+      spatial:
+        bbox: [138, 34, 141, 37]
+        crs: http://www.opengis.net/def/crs/OGC/1.3/CRS84
+    providers:
+      - type: feature
+        name: PostgreSQL
+        data:
+          host: localhost
+          database: postgres
+          user: postgres
+          password: postgres
+        table: temples
+        id_field: id
+        geom_field: geom
+      - type: map
+        name: MapScript
+        data: C:\Users\Luka\Desktop\gis_ps\p2\pygeoapi\temples.map
+        options:
+          layer: temples_layer
