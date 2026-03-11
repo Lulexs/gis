@@ -4,15 +4,7 @@ const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "© OpenStreetMap contributors",
 }).addTo(map);
 
-const kantoWMS = L.tileLayer(
-  "http://localhost:5000/collections/kanto_prefectures/map?f=png&width=256&height=256&bbox={bbox}",
-  {
-    attribution: "Rendered by MapScript",
-  },
-);
-
 const layers = {};
-
 let activeCollections = [];
 
 const hotSpringIcon = L.icon({
@@ -25,11 +17,20 @@ const hotSpringIcon = L.icon({
 fetch("http://localhost:5000/collections?f=json")
   .then((res) => res.json())
   .then((data) => {
-    const container = document.getElementById("collections-list");
+    const featureContainer = document.getElementById("feature-layers");
+    const mapContainer = document.getElementById("map-layers");
 
     data.collections.forEach((col) => {
       const id = col.id;
-      const title = col.title || col.id;
+      const title = col.title || id;
+
+      let isFeatureLayer = col.itemType === "feature";
+
+      let mapLink = col.links?.find(
+        (l) => l.rel === "http://www.opengis.net/def/rel/ogc/1.0/map",
+      );
+
+      let isMapLayer = !!mapLink;
 
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
@@ -41,6 +42,14 @@ fetch("http://localhost:5000/collections?f=json")
 
       const br = document.createElement("br");
 
+      const container = isFeatureLayer
+        ? featureContainer
+        : isMapLayer
+          ? mapContainer
+          : null;
+
+      if (!container) return;
+
       container.appendChild(checkbox);
       container.appendChild(label);
       container.appendChild(br);
@@ -48,7 +57,15 @@ fetch("http://localhost:5000/collections?f=json")
       checkbox.addEventListener("change", function () {
         if (this.checked) {
           activeCollections.push(id);
-          loadCollection(id);
+
+          if (isFeatureLayer) {
+            loadFeatureCollection(id);
+          }
+
+          if (isMapLayer) {
+            console.log(mapLink.href);
+            loadMapLayer(id, mapLink.href);
+          }
         } else {
           activeCollections = activeCollections.filter((c) => c !== id);
           removeCollection(id);
@@ -69,14 +86,13 @@ function buildURL(collectionId) {
   return url;
 }
 
-function loadCollection(collectionId) {
+function loadFeatureCollection(collectionId) {
   const url = buildURL(collectionId);
 
   fetch(url)
     .then((res) => res.json())
     .then((data) => {
       const layer = L.geoJSON(data, {
-        // POINT FEATURES (your hot springs)
         pointToLayer: function (feature, latlng) {
           if (collectionId === "tokyo_hot_springs") {
             return L.marker(latlng, { icon: hotSpringIcon });
@@ -85,7 +101,6 @@ function loadCollection(collectionId) {
           return L.marker(latlng);
         },
 
-        // POLYGONS (your prefectures)
         style: function (feature) {
           if (
             feature.properties &&
@@ -119,16 +134,32 @@ function loadCollection(collectionId) {
     });
 }
 
+function loadMapLayer(collectionId, baseUrl) {
+  const bbox = [139.47, 35.52, 139.57, 35.6];
+  const url = `http://localhost:5000/collections/${collectionId}/map?bbox=${bbox.join(",")}&f=png`;
+
+  const bounds = [
+    [bbox[1], bbox[0]],
+    [bbox[3], bbox[2]],
+  ];
+
+  const overlay = L.imageOverlay(url, bounds, {
+    opacity: 1,
+    interactive: false,
+  });
+
+  overlay.addTo(map);
+  layers[collectionId] = overlay;
+}
 function removeCollection(collectionId) {
   if (layers[collectionId]) {
     map.removeLayer(layers[collectionId]);
   }
 }
 
-// CQL filter button
 document.getElementById("apply-filter").addEventListener("click", () => {
   activeCollections.forEach((id) => {
     removeCollection(id);
-    loadCollection(id);
+    loadFeatureCollection(id);
   });
 });

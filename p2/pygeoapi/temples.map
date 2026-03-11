@@ -1,27 +1,35 @@
-LAYER
-  NAME "temples_layer"
+MAP
+  NAME "temples_map"
   STATUS ON
-  TYPE POINT
-  CONNECTIONTYPE postgis
-  CONNECTION "host=localhost dbname=postgres user=postgres password=postgres port=5432"
-  DATA "geom FROM temples USING UNIQUE id USING SRID=4326"
-  
-  CLASS
-    NAME "Temples"
-    STYLE
-      SYMBOL "circle"
-      SIZE 8
-      COLOR 255 0 0        
-      OUTLINECOLOR 0 0 0
+  EXTENT 138 34 141 37
+  UNITS DD
+
+  SYMBOL
+    NAME "circle"
+    TYPE ellipse
+    FILLED true
+    POINTS
+      1 1
     END
   END
-END
 
-SYMBOL
-  NAME "circle"
-  TYPE ellipse
-  FILLED true
-  POINTS
-    1 1
+  LAYER
+    NAME "temples_layer"
+    STATUS ON
+    TYPE POINT
+    CONNECTIONTYPE POSTGIS
+    CONNECTION "host=localhost dbname=postgres user=postgres password=postgres port=5432"
+    DATA "geom FROM temples USING UNIQUE id USING SRID=4326"
+
+    CLASS
+      NAME "Temples"
+      STYLE
+        SYMBOL "circle"
+        SIZE 8
+        COLOR 255 0 0
+        OUTLINECOLOR 0 0 0
+      END
+    END
   END
+
 END
