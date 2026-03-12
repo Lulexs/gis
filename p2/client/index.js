@@ -6,6 +6,7 @@ const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 const layers = {};
 let activeCollections = [];
+const mapLayerUrls = {};
 
 const hotSpringIcon = L.icon({
   iconUrl: "hot_spring.svg",
@@ -31,6 +32,9 @@ fetch("http://localhost:5000/collections?f=json")
       );
 
       let isMapLayer = !!mapLink;
+      if (isMapLayer) {
+        mapLayerUrls[id] = mapLink.href;
+      }
 
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
@@ -135,15 +139,27 @@ function loadFeatureCollection(collectionId) {
 }
 
 function loadMapLayer(collectionId, baseUrl) {
-  const bbox = [139.47, 35.52, 139.57, 35.6];
-  const url = `http://localhost:5000/collections/${collectionId}/map?bbox=${bbox.join(",")}&f=png`;
+  if (layers[collectionId]) {
+    map.removeLayer(layers[collectionId]);
+  }
 
-  const bounds = [
+  const bounds = map.getBounds();
+  const bbox = [
+    bounds.getWest(),
+    bounds.getSouth(),
+    bounds.getEast(),
+    bounds.getNorth(),
+  ];
+
+  const size = map.getSize();
+  const url = `http://localhost:5000/collections/${collectionId}/map?bbox=${bbox.join(",")}&width=${size.x}&height=${size.y}&f=png`;
+
+  const leafletBounds = [
     [bbox[1], bbox[0]],
     [bbox[3], bbox[2]],
   ];
 
-  const overlay = L.imageOverlay(url, bounds, {
+  const overlay = L.imageOverlay(url, leafletBounds, {
     opacity: 1,
     interactive: false,
   });
@@ -151,6 +167,7 @@ function loadMapLayer(collectionId, baseUrl) {
   overlay.addTo(map);
   layers[collectionId] = overlay;
 }
+
 function removeCollection(collectionId) {
   if (layers[collectionId]) {
     map.removeLayer(layers[collectionId]);
@@ -161,5 +178,17 @@ document.getElementById("apply-filter").addEventListener("click", () => {
   activeCollections.forEach((id) => {
     removeCollection(id);
     loadFeatureCollection(id);
+  });
+});
+
+map.on("moveend", function () {
+  activeCollections.forEach((id) => {
+    // Only reload map layers, not feature layers
+    const checkbox = document.getElementById(id);
+    if (checkbox && checkbox.checked && layers[id] instanceof L.ImageOverlay) {
+      const mapLink =
+        /* you need access to mapLink here */
+        loadMapLayer(id, null);
+    }
   });
 });

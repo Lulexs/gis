@@ -785,6 +785,286 @@ paths:
       summary: Get Tokyo Hot Springs schema
       tags:
       - tokyo_hot_springs
+  /collections/tokyo_rivers:
+    get:
+      description: Great Rivers in Greater Tokyo area
+      operationId: describeTokyo_riversCollection
+      parameters:
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Collection
+        '400':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Greater Tokyo Rivers metadata
+      tags:
+      - tokyo_rivers
+  /collections/tokyo_rivers/items:
+    get:
+      description: Great Rivers in Greater Tokyo area
+      operationId: getTokyo_riversFeatures
+      parameters:
+      - description: The optional f parameter indicates the output format which the
+          server shall provide as part of the response document.  The default format
+          is GeoJSON.
+        explode: false
+        in: query
+        name: f
+        required: false
+        schema:
+          default: json
+          enum:
+          - json
+          - html
+          - jsonld
+          - csv
+          type: string
+        style: form
+      - $ref: '#/components/parameters/lang'
+      - $ref: '#/components/parameters/bbox'
+      - description: The optional limit parameter limits the number of items that
+          are presented in the response document (maximum=50, default=20).
+        explode: false
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 50
+          minimum: 1
+          type: integer
+        style: form
+      - $ref: '#/components/parameters/crs'
+      - $ref: '#/components/parameters/bbox-crs'
+      - &id004
+        description: The properties that should be included. The parameter value is
+          a comma-separated list of property names.
+        explode: false
+        in: query
+        name: properties
+        required: false
+        schema:
+          items:
+            enum:
+            - id
+            - name
+            type: string
+          type: array
+        style: form
+      - $ref: '#/components/parameters/vendorSpecificParameters'
+      - $ref: '#/components/parameters/skipGeometry'
+      - $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-records/master/core/openapi/parameters/sortby.yaml
+      - $ref: '#/components/parameters/offset'
+      - explode: false
+        in: query
+        name: id
+        required: false
+        schema:
+          type: integer
+        style: form
+      - explode: false
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Features
+        '400':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Greater Tokyo Rivers items
+      tags:
+      - tokyo_rivers
+    options:
+      description: Great Rivers in Greater Tokyo area
+      operationId: optionsTokyo_riversFeatures
+      responses:
+        '200':
+          description: options response
+      summary: Options for Greater Tokyo Rivers items
+      tags:
+      - tokyo_rivers
+    post:
+      description: Great Rivers in Greater Tokyo area
+      operationId: getCQL2Tokyo_riversFeatures
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: https://schemas.opengis.net/cql2/1.0/cql2.json
+        description: Get items with CQL2
+        required: true
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Features
+        '400':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '500':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Greater Tokyo Rivers items with CQL2
+      tags:
+      - tokyo_rivers
+  /collections/tokyo_rivers/items/{featureId}:
+    get:
+      description: Great Rivers in Greater Tokyo area
+      operationId: getTokyo_riversFeature
+      parameters:
+      - $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/featureId
+      - $ref: '#/components/parameters/crs'
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Feature
+        '400':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Greater Tokyo Rivers item by id
+      tags:
+      - tokyo_rivers
+    options:
+      description: Great Rivers in Greater Tokyo area
+      operationId: optionsTokyo_riversFeature
+      parameters:
+      - $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/featureId
+      responses:
+        '200':
+          description: options response
+      summary: Options for Greater Tokyo Rivers item by id
+      tags:
+      - tokyo_rivers
+  /collections/tokyo_rivers/queryables:
+    get:
+      description: Great Rivers in Greater Tokyo area
+      operationId: getTokyo_riversQueryables
+      parameters:
+      - *id004
+      - $ref: '#/components/parameters/f'
+      - *id003
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: '#/components/responses/Queryables'
+        '400':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Greater Tokyo Rivers queryables
+      tags:
+      - tokyo_rivers
+  /collections/tokyo_rivers/schema:
+    get:
+      description: Great Rivers in Greater Tokyo area
+      operationId: getTokyo_riversSchema
+      parameters:
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: '#/components/responses/Queryables'
+        '400':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Greater Tokyo Rivers schema
+      tags:
+      - tokyo_rivers
+  /collections/wards:
+    get:
+      description: Wards in Kanto region
+      operationId: describeWardsCollection
+      parameters:
+      - $ref: '#/components/parameters/f'
+      - $ref: '#/components/parameters/lang'
+      responses:
+        '200':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/Collection
+        '400':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '404':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/NotFound
+        '500':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get Kanto Wards metadata
+      tags:
+      - wards
+  /collections/wards/map:
+    get:
+      description: Wards in Kanto region map
+      operationId: getMap
+      parameters:
+      - $ref: '#/components/parameters/bbox'
+      - $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/parameters/datetime
+      - $ref: https://schemas.opengis.net/ogcapi/maps/part1/1.0/openapi/ogcapi-maps-1.yaml#/components/parameters/subset
+      - description: Response image width
+        explode: false
+        in: query
+        name: width
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: Response image height
+        explode: false
+        in: query
+        name: height
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: Background transparency of map (default=true).
+        explode: false
+        in: query
+        name: transparent
+        required: false
+        schema:
+          default: true
+          type: boolean
+        style: form
+      - $ref: '#/components/parameters/bbox-crs-epsg'
+      - description: The optional f parameter indicates the output format which the
+          server shall provide as part of the response document.  The default format
+          is GeoJSON.
+        explode: false
+        in: query
+        name: f
+        required: false
+        schema:
+          default: png
+          enum:
+          - png
+          type: string
+        style: form
+      responses:
+        '200':
+          content:
+            application/json: {}
+          description: Response
+        '400':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        '500':
+          $ref: https://schemas.opengis.net\ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+      summary: Get map
+      tags:
+      - wards
   /conformance:
     get:
       description: API conformance definition
@@ -821,7 +1101,7 @@ paths:
       description: Cancel / delete job
       operationId: deleteJob
       parameters:
-      - &id004
+      - &id005
         description: job identifier
         in: path
         name: jobId
@@ -842,7 +1122,7 @@ paths:
       description: Retrieve job details
       operationId: getJob
       parameters:
-      - *id004
+      - *id005
       - $ref: '#/components/parameters/f'
       responses:
         '200':
@@ -859,7 +1139,7 @@ paths:
       description: Retrieve job results
       operationId: getJobResults
       parameters:
-      - *id004
+      - *id005
       - $ref: '#/components/parameters/f'
       responses:
         '200':
@@ -915,6 +1195,10 @@ tags:
   name: tokyo_hot_springs
 - description: Temples within the most densely populated administrative area
   name: temples
+- description: Wards in Kanto region
+  name: wards
+- description: Great Rivers in Greater Tokyo area
+  name: tokyo_rivers
 - name: coverages
 - name: edr
 - name: records

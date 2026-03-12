@@ -174,3 +174,51 @@ resources:
         format:
           name: png
           mimetype: image/png
+
+  wards:
+    type: collection
+    title: Kanto Wards
+    description: Wards in Kanto region
+    keywords:
+      - tokyo
+      - ward
+    extents:
+      spatial:
+        bbox: [139.066037, 35.3125, 140.303138, 36.002692]
+        crs: http://www.opengis.net/def/crs/OGC/1.3/CRS84
+    providers:
+      - type: map
+        name: MapScript
+        data: C:\Users\Luka\Desktop\gis_ps\p2\pygeoapi\wards.gpkg
+        options:
+          type: MS_LAYER_POLYGON
+          layer: wards_layer
+          style: C:\Users\Luka\Desktop\gis_ps\p2\pygeoapi\wards.sld
+        format:
+          name: png
+          mimetype: image/png
+
+  tokyo_rivers:
+    type: collection
+    title: Greater Tokyo Rivers
+    description: Great Rivers in Greater Tokyo area
+    keywords:
+      - tokyo
+      - rivers
+      - waterway
+    extents:
+      spatial:
+        bbox: [138.9, 35.1, 140.9, 36.2]
+        crs: http://www.opengis.net/def/crs/OGC/1.3/CRS84
+    providers:
+      - type: feature
+        name: PostgreSQL
+        data:
+          host: localhost
+          database: postgres
+          user: postgres
+          password: postgres
+        table: long_tokyo_rivers
+        id_field: id
+        geom_field: geom
+        title_field: name
