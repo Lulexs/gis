@@ -1,3 +1,4 @@
+from qgis.core import QgsRasterLayer
 from qgis.core import *
 from qgis.gui import QgsMapCanvas, QgsMapToolPan
 from qgis.PyQt.QtWidgets import *
@@ -14,6 +15,11 @@ PYTHON312_EXE = r"C:\Users\Luka\AppData\Local\Programs\Python\Python312\python.e
 TEMPLES_INPUT_GPKG = BASE_DIR / "temples.gpkg"
 TEMPLES_FILTERED_GPKG = BASE_DIR / "temples_filtered.gpkg"
 PREPARE_SCRIPT = BASE_DIR / "prepare_some_data.py"
+
+KANTO_GPKG = BASE_DIR / "kanto_tmp.gpkg"
+TOKYO_GPKG = BASE_DIR / "tokyo_tmp.gpkg"
+DIFF_RASTER_TIF = BASE_DIR / "kanto_without_tokyo.tif"
+RASTER_PREPARE_SCRIPT = BASE_DIR / "prepare_raster_data.py"
 
 def run_fiona_filter(search_text):
     clean_env = os.environ.copy()
@@ -53,6 +59,61 @@ def run_fiona_filter(search_text):
 
     return json.loads(result.stdout)
 
+def save_layer_to_gpkg(layer, path, layer_name):
+    if path.exists():
+        path.unlink()
+
+    options = QgsVectorFileWriter.SaveVectorOptions()
+    options.driverName = "GPKG"
+    options.layerName = layer_name
+
+    error = QgsVectorFileWriter.writeAsVectorFormatV3(
+        layer,
+        str(path),
+        QgsCoordinateTransformContext(),
+        options
+    )
+
+    if error[0] != QgsVectorFileWriter.NoError:
+        raise RuntimeError(f"Failed to save {layer_name} to {path}: {error}")
+
+def run_rasterio_diff():
+    clean_env = os.environ.copy()
+
+    clean_env.pop("PYTHONHOME", None)
+    clean_env.pop("PYTHONPATH", None)
+    clean_env.pop("QGIS_PREFIX_PATH", None)
+    clean_env.pop("QT_PLUGIN_PATH", None)
+
+    clean_env["PATH"] = (
+        r"C:\Users\Luka\AppData\Local\Programs\Python\Python312;"
+        r"C:\Users\Luka\AppData\Local\Programs\Python\Python312\Scripts;"
+        + os.pathsep +
+        clean_env.get("PATH", "")
+    )
+
+    result = subprocess.run(
+        [
+            PYTHON312_EXE,
+            str(RASTER_PREPARE_SCRIPT),
+            str(KANTO_GPKG),
+            str(TOKYO_GPKG),
+            str(DIFF_RASTER_TIF),
+        ],
+        capture_output=True,
+        text=True,
+        cwd=str(BASE_DIR),
+        env=clean_env,
+    )
+
+    print("RASTER RETURN CODE:", result.returncode)
+    print("RASTER STDOUT:", result.stdout)
+    print("RASTER STDERR:", result.stderr)
+
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr or result.stdout or "prepare_raster_data.py failed")
+
+    return json.loads(result.stdout)
 
 def load_tokyo_vector_layer():
     uri = QgsDataSourceUri()
@@ -106,7 +167,6 @@ def diff_layers(layer1, layer2):
     result_layer.updateExtents()
     return result_layer
 
-
 def japan_extent_3857():
     wgs84 = QgsCoordinateReferenceSystem("EPSG:4326")
     webmerc = QgsCoordinateReferenceSystem("EPSG:3857")
@@ -114,11 +174,41 @@ def japan_extent_3857():
     transform = QgsCoordinateTransform(wgs84, webmerc, QgsProject.instance())
     return transform.transformBoundingBox(extent_wgs84)
 
+def enable_labels(layer, field_name):
+    if layer is None:
+        return
+
+    settings = QgsPalLayerSettings()
+    settings.enabled = True
+    settings.fieldName = field_name
+
+    geom_type = QgsWkbTypes.geometryType(layer.wkbType())
+    if geom_type == Qgis.GeometryType.Line:
+        settings.placement = Qgis.LabelPlacement.Line
+    elif geom_type == Qgis.GeometryType.Polygon:
+        settings.placement = Qgis.LabelPlacement.OverPoint
+    else:
+        settings.placement = Qgis.LabelPlacement.OverPoint
+
+    text_format = QgsTextFormat()
+    text_format.setSize(10)
+
+    buffer = QgsTextBufferSettings()
+    buffer.setEnabled(True)
+    buffer.setSize(1)
+    text_format.setBuffer(buffer)
+
+    settings.setFormat(text_format)
+
+    layer.setLabelsEnabled(True)
+    layer.setLabeling(QgsVectorLayerSimpleLabeling(settings))
+    layer.triggerRepaint()
+
 
 def load_long_tokyo_rivers_layer():
     uri = QgsDataSourceUri()
     uri.setConnection("localhost", "5432", "postgres", "postgres", "postgres")
-    uri.setDataSource("public", "long_tokyo_rivers", "geom", "", "id")
+    uri.setDataSource("public", "long_tokyo_rivers", "geom", "", "name")
 
     layer = QgsVectorLayer(uri.uri(False), "Long Tokyo Rivers", "postgres")
 
@@ -128,6 +218,7 @@ def load_long_tokyo_rivers_layer():
 
     symbol = layer.renderer().symbol()
     symbol.setWidth(2)
+
     layer.triggerRepaint()
 
     return layer
@@ -173,7 +264,26 @@ def load_temples_filtered_layer():
         print("Failed to load FilteredTemples")
         return None
 
+    print([field.name() for field in layer.fields()])  
+
     return layer
+
+def load_diff_raster_layer():
+    layer = QgsRasterLayer(str(DIFF_RASTER_TIF), "KantoWithoutTokyoRaster")
+    if not layer.isValid():
+        print("Failed to load KantoWithoutTokyoRaster")
+        return None
+    return layer  
+
+def load_osm_base_layer():
+    url = "type=xyz&url=https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+    layer = QgsRasterLayer(url, "OpenStreetMap", "wms")
+
+    if not layer.isValid():
+        print("Failed to load OSM base layer")
+        return None
+
+    return layer      
 
 def load_layers():
     layers = []
@@ -181,11 +291,15 @@ def load_layers():
 
     temples_layer = load_temples_filtered_layer()
     if temples_layer is not None:
-        filtering_layers.append(reproject_layer_to_3857(temples_layer))
+        temples_3857 = reproject_layer_to_3857(temples_layer)
+        enable_labels(temples_3857, "religion")
+        filtering_layers.append(temples_3857)
 
     long_tokyo_rivers_layer = load_long_tokyo_rivers_layer()
     if long_tokyo_rivers_layer is not None:
-        filtering_layers.append(reproject_layer_to_3857(long_tokyo_rivers_layer))
+        rivers_3857 = reproject_layer_to_3857(long_tokyo_rivers_layer)
+        enable_labels(rivers_3857, "name")
+        filtering_layers.append(rivers_3857)
 
     tokyo_layer = load_tokyo_vector_layer()
     if tokyo_layer is not None:
@@ -199,6 +313,30 @@ def load_layers():
         diff_layer = diff_layers(kanto_layer, tokyo_layer)
         if diff_layer is not None:
             layers.append(diff_layer)
+
+        try:
+            save_layer_to_gpkg(kanto_layer, KANTO_GPKG, "kanto_layer")
+            save_layer_to_gpkg(tokyo_layer, TOKYO_GPKG, "tokyo_layer")
+
+            raster_info = run_rasterio_diff()
+            print("Raster worker result:", raster_info)
+
+            raster_layer = load_diff_raster_layer()
+            if raster_layer is not None:
+                renderer = raster_layer.renderer()
+
+                if renderer:
+                    renderer.setOpacity(0.6)
+                raster_layer.triggerRepaint()
+
+                layers.append(raster_layer)
+
+        except Exception as e:
+            print("Rasterio worker failed:", e)
+
+    osm_base_layer = load_osm_base_layer()
+    if osm_base_layer is not None:
+        layers.append(osm_base_layer)
 
     return layers, filtering_layers
 
@@ -218,8 +356,8 @@ class MainWindow(QMainWindow):
         self.layer_checkboxes = {}
         self.filtering_layer_checkboxes = {}
 
-        self.river_layer = self.all_filtering_layers[0] if self.all_filtering_layers else None
-        self.temples_filtered_layer = None
+        self.temples_filtered_layer = self.all_filtering_layers[0] if self.all_filtering_layers else None
+        self.river_layer = self.all_filtering_layers[1] if len(self.all_filtering_layers) > 1 else None
 
         for layer in self.all_layers:
             QgsProject.instance().addMapLayer(layer)
@@ -280,19 +418,13 @@ class MainWindow(QMainWindow):
         self.river_min_length_input.textChanged.connect(self.apply_river_min_length_filter)
         other_group_layout.addWidget(self.river_min_length_input)
 
-        fiona_group = QGroupBox("Fiona Temple Filter")
-        fiona_layout = QVBoxLayout()
-
-        fiona_layout.addWidget(QLabel("Temple name contains:"))
+        other_group_layout.addWidget(QLabel("Temple name contains:"))
         self.temple_name_input = QLineEdit()
-        fiona_layout.addWidget(self.temple_name_input)
+        other_group_layout.addWidget(self.temple_name_input)
 
         run_fiona_btn = QPushButton("Run Fiona Filter")
         run_fiona_btn.clicked.connect(self.run_fiona_filter_and_load)
-        fiona_layout.addWidget(run_fiona_btn)
-
-        fiona_group.setLayout(fiona_layout)
-        right_layout.addWidget(fiona_group)
+        other_group_layout.addWidget(run_fiona_btn)
 
         other_group.setLayout(other_group_layout)
 
@@ -403,6 +535,7 @@ class MainWindow(QMainWindow):
         if new_layer is None:
             QMessageBox.critical(self, "Load error", "Filtered temples layer could not be loaded")
             return
+        enable_labels(new_layer, "religion")
 
         self.temples_filtered_layer = new_layer
         QgsProject.instance().addMapLayer(self.temples_filtered_layer)
@@ -410,9 +543,6 @@ class MainWindow(QMainWindow):
         self.visible_filtering_layers.append(self.temples_filtered_layer)
 
         self.canvas.setLayers(self.visible_filtering_layers + self.visible_layers)
-
-        if self.temples_filtered_layer.featureCount() > 0:
-            self.canvas.setExtent(self.temples_filtered_layer.extent())
 
         self.canvas.refreshAllLayers()
         self.canvas.refresh()     
